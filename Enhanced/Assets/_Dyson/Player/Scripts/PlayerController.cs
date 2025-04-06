@@ -9,7 +9,7 @@ namespace Enhanced.Dyson.Player
     {
         [SerializeField] private GameObject player;
 
-        [SerializeField] private float speed;
+        [SerializeField] public float speed;
 
         [SerializeField] private Rigidbody rb;
 
