@@ -19,7 +19,6 @@ public class Nokia : MonoBehaviour
     public struct Pill
     {
         public string pillName;
-        public string color;
         public string effect;
         public string duration;
         public bool discovered;
@@ -110,10 +109,9 @@ public class Nokia : MonoBehaviour
 
         displayText.text =
             $"- {pill.pillName} -\n" +
-            $"Color: {pill.color}\n" +
             $"Effect: {pill.effect}\n" +
-            $"Duration: {pill.duration}\n" +
-            $"Discovered: Yes";
+            $"Duration: {pill.duration}\n" 
+            ;
     }
 
     public void NextEntry()
