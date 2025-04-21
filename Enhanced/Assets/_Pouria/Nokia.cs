@@ -110,7 +110,8 @@ public class Nokia : MonoBehaviour
         displayText.text =
             $"- {pill.pillName} -\n" +
             $"Effect: {pill.effect}\n" +
-            $"Duration: {pill.duration}\n" 
+            $"Press SPACE to select" 
+            
             ;
     }
 
