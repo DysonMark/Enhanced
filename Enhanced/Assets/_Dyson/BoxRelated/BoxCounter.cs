@@ -11,6 +11,8 @@ public class BoxCounter : MonoBehaviour
     private int count = 0;
 
     private TextMeshProUGUI counterText;
+
+    public Timer _timer;
     private void Awake()
     {
         GameObject obj = GameObject.Find("Counter");
@@ -31,6 +33,7 @@ public class BoxCounter : MonoBehaviour
     public void IncrementCounter()
     {
         count++;
+        _timer.countdown += 15;
         counterText.text = "BoxCount: " + count;
     }
 }
