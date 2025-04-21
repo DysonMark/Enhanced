@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 public class Timer : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI timerText;
@@ -17,6 +17,7 @@ public class Timer : MonoBehaviour
         if (countdown <= 0)
         {
             countdown = 0;
+            SceneManager.LoadScene("Scenes/Warehouse");
         }
     }
 }
