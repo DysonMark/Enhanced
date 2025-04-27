@@ -63,8 +63,13 @@ public class Nokia : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Tab)) OpenPhone();
-        else if (Input.GetKeyDown(KeyCode.Escape)) ClosePhone();
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            if (isPhoneOpen)
+                ClosePhone();
+            else
+                OpenPhone();
+        }
 
         if (Input.GetKeyDown(KeyCode.P)) RestartSceneAndAdvanceDay();
 
@@ -116,7 +121,7 @@ public class Nokia : MonoBehaviour
 
         if (!pill.discovered)
         {
-            displayText.text = "--- UNKNOWN PILL ---\nData Unavailable";
+            displayText.text = "Use Arrow keys to browse pills, SPACE to take them";
             return;
         }
 
