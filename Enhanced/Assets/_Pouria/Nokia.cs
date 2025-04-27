@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using Enhanced.Dyson.Player; 
 
 public class Nokia : MonoBehaviour
@@ -19,10 +20,12 @@ public class Nokia : MonoBehaviour
     public struct Pill
     {
         public string pillName;
+        public string color;
         public string effect;
         public string duration;
-        public bool discovered;
         public PillEffectType effectType;
+        public int unlockDay;
+        [HideInInspector] public bool discovered;
     }
 
     [Header("Phone UI Root")]
@@ -36,7 +39,8 @@ public class Nokia : MonoBehaviour
     [Header("Pill List")]
     public List<Pill> pills;
 
-    
+    [Header("Blinking Text Settings")]
+    public float blinkInterval = 0.5f;
 
     [Header("Effect Targets")]
     public GameObject blurEffectObject;
@@ -46,6 +50,7 @@ public class Nokia : MonoBehaviour
 
     private int currentIndex = 0;
     private bool isPhoneOpen = false;
+    private Coroutine blinkCoroutine;
     private Coroutine speedBoostCoroutine;
 
     private void Start()
@@ -53,12 +58,15 @@ public class Nokia : MonoBehaviour
         prevButton.onClick.AddListener(PreviousEntry);
         nextButton.onClick.AddListener(NextEntry);
         phoneRoot.SetActive(false);
+        UpdatePillDiscovery();
     }
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Tab)) OpenPhone();
         else if (Input.GetKeyDown(KeyCode.Escape)) ClosePhone();
+
+        if (Input.GetKeyDown(KeyCode.P)) RestartSceneAndAdvanceDay();
 
         if (!isPhoneOpen) return;
 
@@ -88,7 +96,12 @@ public class Nokia : MonoBehaviour
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
 
-        
+        if (blinkCoroutine != null)
+        {
+            StopCoroutine(blinkCoroutine);
+            blinkCoroutine = null;
+            displayText.enabled = true;
+        }
     }
 
     private void ShowCurrentEntry()
@@ -108,11 +121,9 @@ public class Nokia : MonoBehaviour
         }
 
         displayText.text =
-            $"- {pill.pillName} -\n" +
+            $"- {pill.pillName.ToUpper()} -\n" +
             $"Effect: {pill.effect}\n" +
-            $"Press SPACE to select" 
-            
-            ;
+            $"Duration: {pill.duration}\n";
     }
 
     public void NextEntry()
@@ -128,7 +139,15 @@ public class Nokia : MonoBehaviour
         currentIndex = (currentIndex - 1 + pills.Count) % pills.Count;
         ShowCurrentEntry();
     }
-    
+
+    private IEnumerator BlinkText()
+    {
+        while (true)
+        {
+            displayText.enabled = !displayText.enabled;
+            yield return new WaitForSeconds(blinkInterval);
+        }
+    }
 
     private void ActivateCurrentPill()
     {
@@ -165,5 +184,28 @@ public class Nokia : MonoBehaviour
         yield return new WaitForSecondsRealtime(boostDuration);
 
         playerController.speed = originalSpeed;
+    }
+
+    
+    private void UpdatePillDiscovery()
+    {
+        int currentDay = GameManager.Instance.currentDay;
+
+        for (int i = 0; i < pills.Count; i++)
+        {
+            pills[i] = UpdatePillDiscoveredStatus(pills[i], currentDay);
+        }
+    }
+
+    private Pill UpdatePillDiscoveredStatus(Pill pill, int day)
+    {
+        pill.discovered = (day >= pill.unlockDay);
+        return pill;
+    }
+    
+    private void RestartSceneAndAdvanceDay()
+    {
+        GameManager.Instance.AdvanceDay();
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }
